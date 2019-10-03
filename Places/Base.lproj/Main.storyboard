@@ -37,6 +37,10 @@
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                     </view>
                     <navigationItem key="navigationItem" title="Places Near You" id="YPW-ui-D6g"/>
+                    <connections>
+                        <outlet property="mapView" destination="jun-Hs-qpe" id="vmC-X5-OSe"/>
+                        <outlet property="tableView" destination="yX0-Ur-mrt" id="mz7-UY-CtI"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
