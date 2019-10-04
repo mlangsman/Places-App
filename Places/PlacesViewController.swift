@@ -14,9 +14,16 @@ class PlacesViewController: UIViewController {
     @IBOutlet var mapView:MKMapView?
     @IBOutlet var tableView:UITableView?
     
+    var locationManager:CLLocationManager?
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
+    
+        locationManager = CLLocationManager()
+        locationManager?.requestWhenInUseAuthorization()
+        
+        
     }
 
 
