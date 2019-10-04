@@ -9,7 +9,7 @@
 import UIKit
 import MapKit
 
-class PlacesViewController: UIViewController {
+class PlacesViewController: UIViewController, CLLocationManagerDelegate {
 
     @IBOutlet var mapView:MKMapView?
     @IBOutlet var tableView:UITableView?
@@ -22,6 +22,20 @@ class PlacesViewController: UIViewController {
     
         locationManager = CLLocationManager()
         locationManager?.requestWhenInUseAuthorization()
+        
+        locationManager?.delegate = self
+        locationManager?.startUpdatingLocation()
+        
+    }
+    
+    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+        print ("gay")
+        
+        if let newLocation = locations.last
+        {
+            print(newLocation)
+            mapView?.setCenter(newLocation.coordinate, animated: true)
+        }
         
         
     }
