@@ -23,6 +23,9 @@ class PlacesViewController: UIViewController, CLLocationManagerDelegate {
         locationManager = CLLocationManager()
         locationManager?.requestWhenInUseAuthorization()
         
+        locationManager?.desiredAccuracy = kCLLocationAccuracyBestForNavigation
+        locationManager?.distanceFilter = 50
+        
         locationManager?.delegate = self
         locationManager?.startUpdatingLocation()
         
@@ -31,11 +34,31 @@ class PlacesViewController: UIViewController, CLLocationManagerDelegate {
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         print ("gay")
         
+        /*
         if let newLocation = locations.last
         {
             print(newLocation)
             mapView?.setCenter(newLocation.coordinate, animated: true)
         }
+        */
+        
+        guard mapView != nil else {
+            return
+        }
+        
+        guard let newLocation = locations.last else {
+            return
+        }
+        
+        let region = MKCoordinateRegion(center: newLocation.coordinate, latitudinalMeters: 200, longitudinalMeters: 200)
+        
+        let adjustedRegion = mapView!.regionThatFits(region)
+        
+        mapView!.setRegion(adjustedRegion, animated: true)
+        
+        //mapView?.setCenter(newLocation.coordinate, animated: true)
+        
+        
         
         
     }
