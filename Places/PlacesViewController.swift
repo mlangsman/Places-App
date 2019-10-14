@@ -19,7 +19,8 @@ class PlacesViewController: UIViewController, CLLocationManagerDelegate {
     var places = [[String: Any]]()
     var isQueryPending = false
     
-    override func viewDidLoad() {
+    override func viewDidLoad()
+    {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
     
@@ -34,7 +35,8 @@ class PlacesViewController: UIViewController, CLLocationManagerDelegate {
         
     }
     
-    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation])
+    {
         
         /*
         if let newLocation = locations.last
@@ -161,9 +163,45 @@ class PlacesViewController: UIViewController, CLLocationManagerDelegate {
         
         
         task.resume()
+
+        }
+     
+    
+    func updatePlaces()
+    {
+        
+        // Best practice: mapView is an oulet - these can be nil before viewDidLoad is
+        // called or if deallocted
+        
+        guard mapView != nil else {
+            return
+        }
+        
+        mapView?.removeAnnotations(mapView!.annotations)
+        
+        for place in places
+        {
+            if  let name        = place["name"] as? String,
+                // let address     = place["address"] as? String,
+                let latitude    = place["latitude"] as? CLLocationDegrees,
+                let longitude   = place["longitude"] as? CLLocationDegrees
+            {
+                let annotation = MKPointAnnotation()
+                annotation.coordinate =  CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
+                annotation.title = name
+                
+                mapView?.addAnnotation(annotation)
+            }
             
+        }
+        
     }
+    
+
+    
 
 
+    
+    
 }
 
