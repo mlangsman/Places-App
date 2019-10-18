@@ -9,7 +9,7 @@
 import UIKit
 import MapKit
 
-class PlacesViewController: UIViewController, CLLocationManagerDelegate {
+class PlacesViewController: UIViewController, CLLocationManagerDelegate, MKMapViewDelegate, UITableViewDataSource, UITableViewDelegate {
 
     @IBOutlet var mapView:MKMapView?
     @IBOutlet var tableView:UITableView?
@@ -19,6 +19,8 @@ class PlacesViewController: UIViewController, CLLocationManagerDelegate {
     var places = [[String: Any]]()
     var isQueryPending = false
     
+    
+    
     override func viewDidLoad()
     {
         super.viewDidLoad()
@@ -27,24 +29,21 @@ class PlacesViewController: UIViewController, CLLocationManagerDelegate {
         locationManager = CLLocationManager()
         locationManager?.requestWhenInUseAuthorization()
         
-        locationManager?.desiredAccuracy = kCLLocationAccuracyBestForNavigation
-        locationManager?.distanceFilter = 50
+        locationManager!.desiredAccuracy = kCLLocationAccuracyBestForNavigation
+        locationManager!.distanceFilter = 50
         
         locationManager?.delegate = self
         locationManager?.startUpdatingLocation()
+        
+        mapView?.delegate = self
+        
+        tableView?.delegate = self
+        tableView?.dataSource = self
         
     }
     
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation])
     {
-        
-        /*
-        if let newLocation = locations.last
-        {
-            print(newLocation)
-            mapView?.setCenter(newLocation.coordinate, animated: true)
-        }
-        */
         
         guard mapView != nil else {
             return
@@ -54,14 +53,15 @@ class PlacesViewController: UIViewController, CLLocationManagerDelegate {
             return
         }
         
-        let region = MKCoordinateRegion(center: newLocation.coordinate, latitudinalMeters: 200, longitudinalMeters: 200)
+        let region = MKCoordinateRegion(center: newLocation.coordinate, latitudinalMeters: 500, longitudinalMeters: 500)
         let adjustedRegion = mapView!.regionThatFits(region)
         
         mapView!.setRegion(adjustedRegion, animated: true)
         
-        //mapView?.setCenter(newLocation.coordinate, animated: true)
+        //mapView!.setCenter(newLocation.coordinate, animated: true)
         
         queryFourSquare(location: newLocation)
+        
     }
     
     func queryFourSquare(location: CLLocation)
@@ -145,7 +145,8 @@ class PlacesViewController: UIViewController, CLLocationManagerDelegate {
                         }
                     }
                     
-                    print(self.places)
+                    print("places \(self.places.count): \(self.places)")
+                  
                     
                 }
                 catch
@@ -155,6 +156,11 @@ class PlacesViewController: UIViewController, CLLocationManagerDelegate {
                 }
                 
                 self.isQueryPending = false
+                
+                DispatchQueue.main.async {
+                    self.updatePlaces()
+                    self.tableView?.reloadData()
+                }
                 
             }
                 
@@ -173,11 +179,14 @@ class PlacesViewController: UIViewController, CLLocationManagerDelegate {
         // Best practice: mapView is an oulet - these can be nil before viewDidLoad is
         // called or if deallocted
         
+        print("Updating Places")
+        print("places \(self.places.count)")
+        
         guard mapView != nil else {
             return
         }
         
-        mapView?.removeAnnotations(mapView!.annotations)
+        mapView!.removeAnnotations(mapView!.annotations)
         
         for place in places
         {
@@ -190,16 +199,72 @@ class PlacesViewController: UIViewController, CLLocationManagerDelegate {
                 annotation.coordinate =  CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
                 annotation.title = name
                 
-                mapView?.addAnnotation(annotation)
+                mapView!.addAnnotation(annotation)
             }
             
         }
         
     }
     
-
+    func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
+        
+        if annotation.isKind(of: MKUserLocation.self)
+        {
+            print("Skipping blip")
+            return nil
+        }
+        
+        var view = mapView.dequeueReusableAnnotationView(withIdentifier: "annotationView")
+        
+        if view == nil
+        {
+            view = MKPinAnnotationView(annotation: annotation, reuseIdentifier: "annotationView")
+            view?.canShowCallout = true
+        }
+        else
+        {
+            view!.annotation = annotation
+        }
+        
+        // print ("mapView Returning")
+        // print (view!.annotation!.title)
+        // print (view!.annotation!.coordinate)
+        return view
+        
+        
+    }
     
 
+    // Return the number of rows for the table.
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        print ("\(#function) --- Places count: \(places.count)")
+        //. return places.count
+        return places.count
+    }
+
+    func numberOfSections(in tableView: UITableView) -> Int {
+        return 1
+    }
+    
+
+    // Provide a cell object for each row.
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+       // Fetch a cell of the appropriate type.
+       
+        var cell = tableView.dequeueReusableCell(withIdentifier: "cell")
+       
+        if cell == nil
+        {
+            cell = UITableViewCell(style: .subtitle, reuseIdentifier: "cell")
+        }
+        
+        // Configure the cell’s contents.
+        cell!.textLabel?.text = places[indexPath.row]["name"] as? String
+        cell!.detailTextLabel?.text = places[indexPath.row]["address"] as? String
+           
+        return cell!
+    }
+    
 
     
     
