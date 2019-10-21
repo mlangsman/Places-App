@@ -147,7 +147,13 @@ class PlacesViewController: UIViewController, CLLocationManagerDelegate, MKMapVi
                     
                     print("places \(self.places.count): \(self.places)")
                   
-                    
+                    self.places.sort() { item1, item2 in
+                        let name1 = item1["name"] as! String
+                        let name2 = item2["name"] as! String
+                        return name1 < name2
+                    }
+                        
+                        
                 }
                 catch
                 {
@@ -155,6 +161,7 @@ class PlacesViewController: UIViewController, CLLocationManagerDelegate, MKMapVi
                     return
                 }
                 
+                    
                 self.isQueryPending = false
                 
                 DispatchQueue.main.async {
