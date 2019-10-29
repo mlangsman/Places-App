@@ -9,16 +9,17 @@
 import UIKit
 import MapKit
 
-class PlacesViewController: UIViewController, CLLocationManagerDelegate, MKMapViewDelegate, UITableViewDataSource, UITableViewDelegate {
+class PlacesViewController: UIViewController, MKMapViewDelegate, UITableViewDataSource, UITableViewDelegate {
 
     @IBOutlet var mapView:MKMapView?
     @IBOutlet var tableView:UITableView?
     
-    var locationManager:CLLocationManager?
+    // var locationManager:CLLocationManager?
     
     var places = [[String: Any]]()
     var isQueryPending = false
     
+    let locationManager = LocationManager()
     
     
     override func viewDidLoad()
@@ -26,15 +27,12 @@ class PlacesViewController: UIViewController, CLLocationManagerDelegate, MKMapVi
         super.viewDidLoad()
         // Do any additional setup after loading the view.
     
-        locationManager = CLLocationManager()
-        locationManager?.requestWhenInUseAuthorization()
-        
-        locationManager!.desiredAccuracy = kCLLocationAccuracyBestForNavigation
-        locationManager!.distanceFilter = 50
-        
-        locationManager?.delegate = self
-        locationManager?.startUpdatingLocation()
-        
+        locationManager.start { location in
+            self.centerMapView(on: location)
+            self.queryFourSquare(with: location)
+            
+        }
+ 
         mapView?.delegate = self
         
         tableView?.delegate = self
@@ -42,29 +40,20 @@ class PlacesViewController: UIViewController, CLLocationManagerDelegate, MKMapVi
         
     }
     
-    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation])
+    func centerMapView(on location: CLLocation)
     {
-        
         guard mapView != nil else {
-            return
-        }
+                   return
+               }
         
-        guard let newLocation = locations.last else {
-            return
-        }
-        
-        let region = MKCoordinateRegion(center: newLocation.coordinate, latitudinalMeters: 500, longitudinalMeters: 500)
+        let region = MKCoordinateRegion(center: location.coordinate, latitudinalMeters: 500, longitudinalMeters: 500)
         let adjustedRegion = mapView!.regionThatFits(region)
         
         mapView!.setRegion(adjustedRegion, animated: true)
         
-        //mapView!.setCenter(newLocation.coordinate, animated: true)
-        
-        queryFourSquare(location: newLocation)
-        
     }
     
-    func queryFourSquare(location: CLLocation)
+    func queryFourSquare(with location: CLLocation)
     {
         print("Calling Foursquare...")
         // Semaphore
