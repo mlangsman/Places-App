@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		9F18142A23675FDF00135035 /* LocationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F18142923675FDF00135035 /* LocationManager.swift */; };
+		9F18142C23687D1800135035 /* FoursquareAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F18142B23687D1800135035 /* FoursquareAPI.swift */; };
 		9F84A1F9234DFFEC008C35F2 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F84A1F8234DFFEC008C35F2 /* Constants.swift */; };
 		9FDB15E723466000005F1F3E /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FDB15E623466000005F1F3E /* AppDelegate.swift */; };
 		9FDB15E923466000005F1F3E /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FDB15E823466000005F1F3E /* SceneDelegate.swift */; };
@@ -19,6 +20,7 @@
 
 /* Begin PBXFileReference section */
 		9F18142923675FDF00135035 /* LocationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationManager.swift; sourceTree = "<group>"; };
+		9F18142B23687D1800135035 /* FoursquareAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FoursquareAPI.swift; sourceTree = "<group>"; };
 		9F84A1F8234DFFEC008C35F2 /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 		9FDB15E323466000005F1F3E /* Places.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Places.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		9FDB15E623466000005F1F3E /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -63,6 +65,7 @@
 				9FDB15E623466000005F1F3E /* AppDelegate.swift */,
 				9FDB15E823466000005F1F3E /* SceneDelegate.swift */,
 				9FDB15EA23466000005F1F3E /* PlacesViewController.swift */,
+				9F18142B23687D1800135035 /* FoursquareAPI.swift */,
 				9F18142923675FDF00135035 /* LocationManager.swift */,
 				9F84A1F8234DFFEC008C35F2 /* Constants.swift */,
 				9FDB15EC23466000005F1F3E /* Main.storyboard */,
@@ -145,6 +148,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				9FDB15EB23466000005F1F3E /* PlacesViewController.swift in Sources */,
+				9F18142C23687D1800135035 /* FoursquareAPI.swift in Sources */,
 				9FDB15E723466000005F1F3E /* AppDelegate.swift in Sources */,
 				9F18142A23675FDF00135035 /* LocationManager.swift in Sources */,
 				9FDB15E923466000005F1F3E /* SceneDelegate.swift in Sources */,

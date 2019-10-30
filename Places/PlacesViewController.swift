@@ -16,10 +16,9 @@ class PlacesViewController: UIViewController, MKMapViewDelegate, UITableViewData
     
     // var locationManager:CLLocationManager?
     
-    var places = [[String: Any]]()
-    var isQueryPending = false
-    
     let locationManager = LocationManager()
+    
+    var places = [[String: Any]]()
     
     
     override func viewDidLoad()
@@ -55,119 +54,13 @@ class PlacesViewController: UIViewController, MKMapViewDelegate, UITableViewData
     
     func queryFourSquare(with location: CLLocation)
     {
-        print("Calling Foursquare...")
-        // Semaphore
-        
-        if (self.isQueryPending) {
-            return
-        }
-        
-        self.isQueryPending = true
-        
-        // Set API request params
-        
-        let clientID        = URLQueryItem(name: "client_id", value: Constants.keys.foursquareClientID)
-        let clientSecret    = URLQueryItem(name: "client_secret", value: Constants.keys.foursquareSecret)
-
-        let version         = URLQueryItem(name: "v", value: "20190401")
-        let coordinate      = URLQueryItem(name: "ll", value: "\(location.coordinate.latitude),\(location.coordinate.longitude)")
-        let intent          = URLQueryItem(name: "intent", value: "browse")
-        let radius          = URLQueryItem(name: "radius", value: "250")
-        let query           = URLQueryItem(name: "query", value: "coffee")
-        
-        var urlComponents   = URLComponents(string: "https://api.foursquare.com/v2/venues/search")!
-        
-        
-        // Build query
-        
-        urlComponents.queryItems = [clientID, clientSecret, version, coordinate, intent, radius, query]
-        
-        // Run query
-        
-        let task = URLSession.shared.dataTask(with: urlComponents.url!, completionHandler:
+        FoursquareAPI.shared.query(location: location, completionHandler: { places in
+            self.places = places
+            self.updatePlaces()
+            self.tableView?.reloadData()
             
-            { data, response, error in
-                
-                if error != nil
-                {
-                    print("*** Error: \(error?.localizedDescription)")
-                    return
-                }
-                
-                if response == nil || data == nil
-                {
-                    print("Something went wrong")
-                    return
-                }
-                
-                // Clear the places array before we start to fill it
-                self.places.removeAll()
-                
-                do
-                {
-                    // Serialise Json to an object
-                    let jsonData = try JSONSerialization.jsonObject(with: data!, options: [])
-                    //print(jsonData)
-                    
-                    // Downcast json components to dictionaries / array of dictionaries so we can manipulate them
-                    
-                    if  let jsonObject = jsonData as? [String: Any],
-                        let response = jsonObject["response"] as? [String: Any],
-                        let venues = response["venues"] as? [[String: Any]]
-                    {
-                        // Add each venue to the places array
-                        for venue in venues
-                        {
-                            if  let name             = venue["name"] as? String,
-                                let location         = venue["location"] as? [String: Any],
-                                let latitude         = location["lat"] as? Double,
-                                let longitude        = location["lng"] as? Double,
-                                let formattedAddress = location["formattedAddress"] as? [String]
-                            {
-                                self.places.append([
-                                    "name": name,
-                                    "address": formattedAddress.joined(separator: " "),
-                                    "latitude": latitude,
-                                    "longitude": longitude,
-                                ])
-                            }
-                        }
-                    }
-                    
-                    print("places \(self.places.count): \(self.places)")
-                  
-                    self.places.sort() { item1, item2 in
-                        let name1 = item1["name"] as! String
-                        let name2 = item2["name"] as! String
-                        return name1 < name2
-                    }
-                        
-                        
-                }
-                catch
-                {
-                    print("JSon Error: \(error.localizedDescription)")
-                    return
-                }
-                
-                    
-                self.isQueryPending = false
-                
-                DispatchQueue.main.async {
-                    self.updatePlaces()
-                    self.tableView?.reloadData()
-                }
-                
-            }
-                
-                
-        )
-        
-        
-        task.resume()
-
-        }
-     
+        })
+    }
     
     func updatePlaces()
     {
